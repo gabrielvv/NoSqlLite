@@ -41,7 +41,7 @@ int hashmap_hashcode(char* key, int slots) {
   return hash % slots;
 }
 
-// NON OK
+// OK
 // Ex :  hashmap_put(map, 'student.rate', 56);
 //       hashmap_traverse(map, 'student.rate')   56
 void hashmap_put(t_hashmap* map, char* path, void* value) {
@@ -68,7 +68,7 @@ void hashmap_put(t_hashmap* map, char* path, void* value) {
   map->size++;
 }
 
-// NON OK
+// OK
 void hashmap_resize(t_hashmap* map){
 
   printf("\n---------------MAP_RESIZE-------------------\n");
@@ -159,6 +159,7 @@ void* hashmap_delete(t_hashmap* map, char* key){
   return value;
 }
 
+// NON OK
 int hashmap_free(t_hashmap* map){
   return 1;
 }
