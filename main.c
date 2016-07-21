@@ -127,39 +127,39 @@ void test_json(){
 
   /** @todo test case: objet contenu dans objet */
 
-  t_hashmap* map = JSON_parse(json_test_strings[0]);
+  t_hashmap* map = JSON_parse(json_test_strings[0], NULL);
   printf("%d", strcmp(hashmap_get(map, "key"), "value") != 0);
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[1]);
+  map = JSON_parse(json_test_strings[1], NULL);
   printf("%d", 12 == *((int*)hashmap_get(map, "key")) );
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[2]);
+  map = JSON_parse(json_test_strings[2], NULL);
   printf("%d", 1.2 == *((float*)hashmap_get(map, "key")) );
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[3]);
+  map = JSON_parse(json_test_strings[3], NULL);
   printf("%d", map == NULL);
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[4]);
+  map = JSON_parse(json_test_strings[4], NULL);
   printf("%d", map == NULL);
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[5]);
+  map = JSON_parse(json_test_strings[5], NULL);
   printf("%d", map == NULL);
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[6]);
+  map = JSON_parse(json_test_strings[6], NULL);
   printf("%d", map == NULL);
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[7]);
+  map = JSON_parse(json_test_strings[7], NULL);
   printf("%d", map == NULL);
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[8]);
+  map = JSON_parse(json_test_strings[8], NULL);
   printf("%d", map == NULL);
   hashmap_free(map);
 
