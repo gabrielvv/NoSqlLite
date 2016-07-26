@@ -13,10 +13,15 @@
 * strcpy  Copy string
 */
 
-
 // Convert a JSON String to a HashMap representation.
-t_hashmap* JSON_parse(char* string, t_hashmap* map){
+t_hashmap* JSON_parse_sub(char* root, char* string, t_hashmap* map){
   // manque trim pour supprimer les blancs au début et à la fin
+
+  char* key;
+  void* value;
+  enum bool inside_char = FALSE;
+  enum bool inside_key = FALSE;
+  enum bool inside_value = FALSE;
 
   int slots = 10;
   if(map == NULL)
@@ -30,13 +35,20 @@ t_hashmap* JSON_parse(char* string, t_hashmap* map){
 
   /*********************************************
    : marque la séparation key-value (si on n'est pas dans une chaine de caractères)
-   ' indique une string (si on n'est dans une chaine de caractères -> erreur?)
+   \' indique une string (si on n'est dans une chaine de caractères -> erreur?)
    . peut indiquer un float (si on n'est pas dans une chaine de caractères)
+   , séparateur entre paires key-value
    {(123) et }(125) indiquent un objet -> récursivité du JSON_parse
+
+   Une key se trouve entre ',' et ':' ou entre ' ' et ':'
+   Une value se trouve entre ':' et ',' ou entre ':' et ' '
   ***************************************************/
   unsigned i ;
   for(i = 1; i < size-1; i++){
+
     char c = string[i];
+
+    /******************* SOUS-ELEMENT ***********************/
     if(c == 123){
       //recherche de l'accolade fermante
       unsigned j;
@@ -53,13 +65,40 @@ t_hashmap* JSON_parse(char* string, t_hashmap* map){
       char substr[j-i];
       // à tester
       substring(string, i, j-1, substr);
-      JSON_parse(substr, map);
+
+      JSON_parse_sub(rootkey, substr, map);
     }
+
+    /****************************************************/
     if(c == 125){
-
+      //accolade fermante
+    
     }
-    if(c == '\''){
 
+    /****************** KEY OU VALUE ****************************/
+    if(c == '\''){
+      if(lookingForValue == FALSE)
+        return NULL; //on n'est pas dans un espace réservé à la valeur entre ':' et ','
+      if(inside_char == FALSE){
+        inside_char = TRUE;
+        // guillemet_ouvrant++;
+        char_start = i;
+      }
+      if(inside_char == TRUE){
+        // guillement_fermant++;
+        inside_char = FALSE;
+        char_end = i;
+        int comma = findComma(i, string);
+
+       /**
+        * 1 cas particulier:
+        *  - la string est la dernière valeur de l'objet
+        *
+        *
+        */
+        if(comma == -1)
+          return NULL; //si le prochain caractère non whitespace n'est pas une virgule => JSON mal formé
+      }
     }
     if(c == ':'){
 
@@ -67,6 +106,11 @@ t_hashmap* JSON_parse(char* string, t_hashmap* map){
 
     if(c == '.'){
 
+    }
+
+    /****************** SEPARATEUR KEY-VALUE ****************************/
+    if(c == ','){
+      // if(inside_char == FALSE && inside_key_value == TRUE)
     }
 
     // Array -> si on a le temps
@@ -79,6 +123,12 @@ t_hashmap* JSON_parse(char* string, t_hashmap* map){
 
   }
 
+  return map;
+}
+
+t_hashmap* JSON_parse(char* string){
+  t_hashmap* map = NULL;
+  JSON_parse_sub("", string, map);
   return map;
 }
 

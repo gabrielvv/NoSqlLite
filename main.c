@@ -2,21 +2,53 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
 #include "hashmap.h"
-#include "JSON.h"
+#include "json.h"
 #include "cli.h"
 #include "nosql.h"
+#include "utils.h"
 
 void test_hashmap_put();
 void test_hashmap_get();
 void test_json();
+void test_nosql();
+void test_utils();
 
-int main(){
-  // test_json();
-  test_hashmap_put();
-  test_hashmap_get();
+int main(int argc, char* argv[]){
+  int i = 0;
+
+  if(i == 0){
+    /**************************** TEST **************************/
+    // test_json();
+    // test_hashmap_put();
+    // test_hashmap_get();
+    test_nosql();
+    // test_utils();
+  }
+
+  if(i == 1){
+    /**************************** NOSQL LITE **************************/
+    handleArgs(argc, argv);
+  }
+
   return 0;
 }
+
+void test_utils(){
+  char str[] = "{}{}";
+  char substr[2];
+  substring(str, 0, 1, substr);
+  printf("%s\n", strcmp(substr, "{}") == 0 ? "PASS" : "FAIL");
+}
+
+void test_nosql(){
+  t_hashmap** map_array = NULL;
+  printf("%s\n", load_collection("test1.json", map_array) == 1 ? "PASS" : "FAIL");
+  // printf("%s\n", load_collection("test2.json", map_array) == 2 ? "PASS" : "FAIL");
+  // printf("%s\n", load_collection("test3.json", map_array) == 1 ? "PASS" : "FAIL");
+}
+
 
 // OK
 void test_hashmap_put(){
@@ -127,39 +159,39 @@ void test_json(){
 
   /** @todo test case: objet contenu dans objet */
 
-  t_hashmap* map = JSON_parse(json_test_strings[0], NULL);
+  t_hashmap* map = JSON_parse(json_test_strings[0]);
   printf("%d", strcmp(hashmap_get(map, "key"), "value") != 0);
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[1], NULL);
+  map = JSON_parse(json_test_strings[1]);
   printf("%d", 12 == *((int*)hashmap_get(map, "key")) );
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[2], NULL);
+  map = JSON_parse(json_test_strings[2]);
   printf("%d", 1.2 == *((float*)hashmap_get(map, "key")) );
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[3], NULL);
+  map = JSON_parse(json_test_strings[3]);
   printf("%d", map == NULL);
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[4], NULL);
+  map = JSON_parse(json_test_strings[4]);
   printf("%d", map == NULL);
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[5], NULL);
+  map = JSON_parse(json_test_strings[5]);
   printf("%d", map == NULL);
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[6], NULL);
+  map = JSON_parse(json_test_strings[6]);
   printf("%d", map == NULL);
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[7], NULL);
+  map = JSON_parse(json_test_strings[7]);
   printf("%d", map == NULL);
   hashmap_free(map);
 
-  map = JSON_parse(json_test_strings[8], NULL);
+  map = JSON_parse(json_test_strings[8]);
   printf("%d", map == NULL);
   hashmap_free(map);
 
