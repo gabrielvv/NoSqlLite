@@ -11,13 +11,7 @@
     </ADDITIONAL_GENERATION_ENVIRONMENT>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="30131aee-6497-4c76-aeee-d99ae8c69320" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hashmap.h" afterPath="$PROJECT_DIR$/hashmap.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/json.c" afterPath="$PROJECT_DIR$/json.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/json.h" afterPath="$PROJECT_DIR$/json.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.c" afterPath="$PROJECT_DIR$/main.c" />
-    </list>
+    <list default="true" id="30131aee-6497-4c76-aeee-d99ae8c69320" name="Default" comment="" />
     <ignored path="NoSqlLite.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
