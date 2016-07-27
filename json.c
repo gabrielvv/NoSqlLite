@@ -19,13 +19,12 @@ t_hashmap* JSON_parse(char* string){
     printf("%s",string);
     if(string[0] == '{'){
         printf("Début du parsing\n");
-        getKeyValue(1,string);
-
+        getKeyValue(string);
     }
     return map;
 }
 
-int getKeyValue(int index, char* json){
+int getKeyValue(char* json){
     json = strtok (json,",");
 
 
@@ -38,7 +37,6 @@ int getKeyValue(int index, char* json){
         json = strtok (NULL, ",");
         getKey(json);
     }
-
     return 0;
 }
 
@@ -102,7 +100,7 @@ void getKey(char* json){
     }
 
     printf("key :%s Value :%s ",keySpace,valueSpace);
-    printf(" Type : %s\n",printType(type));
+    printf(" Type :%s\n",printType(type));
 
 
 
