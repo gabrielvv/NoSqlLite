@@ -23,5 +23,6 @@ char* removeQuote(char source[]);
 char* printType(Type type);
 int check_string( char* string);
 void myStrcopy(char *copy, char* target, int size);
+char* entryStringify(t_hashmap_entry* entry);
 
 #endif

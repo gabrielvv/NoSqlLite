@@ -15,8 +15,9 @@ int main(){
   char json[] = "{ name : 'Gabriel', rate : 12,  group : 'AL2' }";
   t_hashmap* map = JSON_parse(json);
 
-  printf("test %d\n",map->size);
-  printf("Print name %s",hashmap_get(map,"name"));
+  //printf("test %d\n",map->size);
+  //printf("Print name %s\n",hashmap_get(map,"name"));
+  JSON_stringify(map);
   // test_json();
   //test_hashmap_put();
   //test_hashmap_get();
@@ -24,7 +25,7 @@ int main(){
 }
 
 // OK
-void test_hashmap_put(){
+/*void test_hashmap_put(){
 
   int slots = 10;
   t_hashmap* map = hashmap_create(slots, 0.7, 2.2);
@@ -101,7 +102,7 @@ void test_hashmap_get(){
   printf("%s\n", strcmp((char*)hashmap_get(map, "bbb"), "bbb") == 0? "PASS" : "FAIL");
   printf("%s\n", strcmp((char*)hashmap_get(map, "zzz"), "zzz") == 0? "PASS" : "FAIL");
   printf("%s\n", strcmp((char*)hashmap_get(map, "ooo"), "ooo") == 0? "PASS" : "FAIL");
-}
+}*/
 
 void test_hashmap_resize(){
 

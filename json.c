@@ -10,6 +10,9 @@
 
 // Convert a JSON String to a hasMap representation
 t_hashmap* JSON_parse(char* string){
+
+    if(strcmp(string, "{}")== 0)
+        return  hashmap_create(10,0.7,2.2);
     //Volume p = DOUBLE;
     if(jsonError(string)==0){
         printf("Une erreur se trouve dans l'object json\n");
@@ -30,7 +33,7 @@ t_hashmap* JSON_parse(char* string){
 
 
         //printf("Print de p %s\n",json);
-        getKey(json,map);
+       // getKey(json,map);
         while (json!= NULL)
         {
             getKey(json,map);
@@ -110,6 +113,7 @@ void getKey(char* json,t_hashmap* map){
             type = STRING;
             //printf("Value Test quote%s\n",valueSpace);
             valueSpace = removeQuote(valueSpace);
+
             cpt ++;
             break;
         }
@@ -123,10 +127,8 @@ void getKey(char* json,t_hashmap* map){
         }
     }
 
-    printf("key :%s Value :%s ",keySpace,valueSpace);
-    printf(" Type :%s\n",printType(type));
-    hashmap_put(map, keySpace, valueSpace);
-    printf("test getKey\n");
+    printf("key :%s, Value :%s,type: %s\n",keySpace,valueSpace, printType(type));
+    hashmap_put(map, keySpace, valueSpace,type);
 
 }
 
@@ -173,6 +175,7 @@ char* removeQuote(char source[]){
             g++;
         }
     }
+    str[g] = '\0';
     return str;
 }
 
@@ -188,6 +191,7 @@ char* removeSpace(char source[]){
            g++;
        }
     }
+    str[g] = '\0';
     return str;
 }
 
@@ -211,7 +215,59 @@ int jsonError(char * json){
 
 // Convert a HashMap to a JSON String representation.
 char* JSON_stringify(t_hashmap* map){
-  int x = 1;
-  char* json = malloc(sizeof(char*)*x);
+ // int x = 1;
+  //char* json = malloc(sizeof(char*)*x);
+
+    /*char** keys = malloc(sizeof(char*)*map->size);
+    int size = hashmap_get_keys(map,keys);
+    for(int i =0; i<size;i++){
+        //printf("%s\n", keys[i]);
+        printf("Value %s\n",hashmap_get(map,keys[i]));
+
+    }*/
+    char ** keys;
+    int size = hashmap_get_keys(map,keys);
+    unsigned i;
+    unsigned count = 0;
+    int slots_number = map->slots;
+    t_hashmap_entry *entry;
+    char* json = malloc(sizeof(char)*200);
+    //char* keys;
+    strcat(json,"{");
+
+    for(i = 0; i < slots_number; i++){
+        entry = map->entries[i];
+        while(entry){
+           // keys = entry->key;
+            strcat(json," ");
+            strcat(json,(entryStringify(entry)));
+            entry = entry->next;
+            count++;
+            if(count <size){
+                strcat(json,",");
+
+            }
+        }
+    }
+    strcat(json," }");
+    printf("json : %s\n",json);
   return json;
+}
+
+char* entryStringify(t_hashmap_entry* entry){
+    char* string;
+    string = entry->key;
+    strcat (string," : ");
+    //printf("key : %s Type %s\n",string,printType(entry->type));
+    if(entry->type == STRING){
+        strcat(string,"\"");
+        strcat(string,entry->value);
+        strcat(string,"\"");
+    }
+
+    else if(entry->type == INT){
+        strcat(string,entry->value);
+    }
+    //printf("Str %s\n",string);
+    return string;
 }
