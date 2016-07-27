@@ -35,15 +35,25 @@ void nosql_find(char* collection, char* action_arg){
   load_collection(collection, map_array);
 
   unsigned i, j;
-  unsigned count = 0;
-  enum bool found = FALSE;
+  // unsigned count = 0;
+  bool found = FALSE;
 
   for(i = 0; i < collection_size; i++){
-    for(j = 0; j < keys_len; j++){
-      if()
-    }
-  }
+    t_hashmap* map = map_array[i];
 
+    for(j = 0; j < keys_len; j++){
+      char* key = keys[j];
+      if(strcmp( hashmap_get(to_find, key), hashmap_get(map, key) ) == 0){
+        found = TRUE;
+      }else{
+        found = FALSE;
+        break;
+      }
+    }
+
+    if(found == TRUE)
+      printf("%s\n", JSON_stringify(map));
+  }
 }
 void nosql_find_sort(char* collection, char* action_arg, char* option_arg){
 
@@ -203,8 +213,7 @@ unsigned load_collection(char* collection, t_hashmap** map_array){
         substring(str, start, end, substr);
         // printf("substr :\n%s\n", substr);
 
-        /** TODO implémenter JSON_parse */
-        // map_array[i] = JSON_parse(substr);
+        map_array[i] = JSON_parse(substr);
         ouvrante = 0;
         fermante = 0;
         start = -1;

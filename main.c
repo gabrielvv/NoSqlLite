@@ -20,10 +20,10 @@ int main(int argc, char* argv[]){
 
   if(i == 0){
     /**************************** TEST **************************/
-    // test_json();
+    test_json();
     // test_hashmap_put();
     // test_hashmap_get();
-    test_nosql();
+    // test_nosql();
     // test_utils();
   }
 
@@ -156,23 +156,23 @@ void test_json(){
   //Ne pas insérer d'espaces ??
   //On considère que les JSON strings seront stockées sans espaces ??
   // Il faut peut être s'occuper des espaces
-  json_test_strings[0] = "{\"key\":\"value\"}";
-  json_test_strings[1] = "{\"key\":12}";
-  json_test_strings[2] = "{\"key\": 1.2}";
-
-  json_test_strings[3] = "{ key: \"value\"}"; //error
-  json_test_strings[4] = "{\"key\": }"; //error
-  json_test_strings[5] = "{: }"; //error
-  json_test_strings[6] = "{\"key\": "; //error
-  json_test_strings[7] = "\"key\": "; //error
-  json_test_strings[8] = "\"key\": }"; //error
+  json_test_strings[0] = "{key: 'value'}";
+  // json_test_strings[1] = "{\"key\":12}";
+  // json_test_strings[2] = "{\"key\": 1.2}";
+  //
+  // json_test_strings[3] = "{ key: \"value\"}"; //error
+  // json_test_strings[4] = "{\"key\": }"; //error
+  // json_test_strings[5] = "{: }"; //error
+  // json_test_strings[6] = "{\"key\": "; //error
+  // json_test_strings[7] = "\"key\": "; //error
+  // json_test_strings[8] = "\"key\": }"; //error
 
   /** @todo test case: objet contenu dans objet */
+  printf("parsing");
+  t_hashmap* map = JSON_parse(json_test_strings[0]);
+  printf("%d", strcmp(hashmap_get(map, "key"), "value") != 0);
+  hashmap_free(map);
 
-  // t_hashmap* map = JSON_parse(json_test_strings[0]);
-  // printf("%d", strcmp(hashmap_get(map, "key"), "value") != 0);
-  // hashmap_free(map);
-  //
   // map = JSON_parse(json_test_strings[1]);
   // printf("%d", 12 == *((int*)hashmap_get(map, "key")) );
   // hashmap_free(map);

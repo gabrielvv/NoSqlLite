@@ -6,17 +6,16 @@
 typedef enum Type Type;
 enum Type
 {
-    INT,BOOLEAN, STRING,FLOAT,DATE
+  INT,BOOLEAN,STRING,FLOAT,DATE
 };
 
 typedef struct indexValue {
     int a;
     char* b;
-
 }t_indexValue;
 
 
-t_hashmap* JSON_parse(char* string, t_hashmap* map) ; // Convert a JSON String to a HashMap representation.
+t_hashmap* JSON_parse(char* string) ; // Convert a JSON String to a HashMap representation.
 char* JSON_stringify(t_hashmap* map) ; // Convert a HashMap to a JSON String representation.
 t_indexValue* JSON_getKey(int index, char* json);
 int getKeyValue(char* json);
