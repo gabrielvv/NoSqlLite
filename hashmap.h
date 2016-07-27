@@ -1,9 +1,16 @@
 #ifndef HASH
 #define HASH
 
+typedef enum Type Type;
+enum Type
+{
+    INT,BOOLEAN, STRING,FLOAT,DATE
+};
+
 typedef struct s_hashmap_entry {
   char* key;
   void* value;
+    Type type;
 
   struct s_hashmap_entry *next;
 } t_hashmap_entry;

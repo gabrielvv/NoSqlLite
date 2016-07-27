@@ -3,11 +3,7 @@
 
 #include "hashmap.h"
 
-typedef enum Type Type;
-enum Type
-{
-    INT,BOOLEAN, STRING,FLOAT,DATE
-};
+
 
 typedef struct indexValue {
     int a;
