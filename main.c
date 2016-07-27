@@ -13,10 +13,13 @@ void test_json();
 
 int main(){
   char json[] = "{ name : 'Gabriel', rate : 12,  group : 'AL2' }";
-  JSON_parse(json);
+  t_hashmap* map = JSON_parse(json);
+
+  printf("test %d\n",map->size);
+  printf("Print name %s",hashmap_get(map,"name"));
   // test_json();
-  test_hashmap_put();
-  test_hashmap_get();
+  //test_hashmap_put();
+  //test_hashmap_get();
   return 0;
 }
 

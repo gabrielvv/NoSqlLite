@@ -10,37 +10,61 @@
 
 // Convert a JSON String to a hasMap representation
 t_hashmap* JSON_parse(char* string){
-    t_hashmap* map = malloc(sizeof(t_hashmap*));
     //Volume p = DOUBLE;
     if(jsonError(string)==0){
         printf("Une erreur se trouve dans l'object json\n");
         //return map;
     }
     printf("%s",string);
+    t_hashmap* map;
     if(string[0] == '{'){
         printf("Début du parsing\n");
-        getKeyValue(string);
+        map = hashmap_create(10,0.7, 2.2);
+        //getKeyValue(string);
+        char* json;
+        const char delim[2] = ",";
+        json = strtok (string,",");
+       // char line[strlen(json)];
+
+
+
+
+        //printf("Print de p %s\n",json);
+        getKey(json,map);
+        while (json!= NULL)
+        {
+            getKey(json,map);
+            json = strtok (NULL, delim);
+        }
     }
     return map;
 }
 
-int getKeyValue(char* json){
+void myStrcopy(char *copy, char* target, int size){
+    int i;
+    for( i = 0; i<size;i++){
+        target[i]=copy[i] ;
+    }
+    target[i]='\0';
+}
+
+/*int getKeyValue(char* json){
     json = strtok (json,",");
 
 
-    //printf("Print de p %s\n",p);
+    printf("Print de p %s\n",json);
     getKey(json);
 
     while (json != NULL)
     {
-        //printf ("%s\n",json);
+        printf ("print du json1 %s\n",json);
         json = strtok (NULL, ",");
         getKey(json);
     }
     return 0;
-}
+}*/
 
-void getKey(char* json){
+void getKey(char* json,t_hashmap* map){
     char key[50] ="";
     char value[50] = "";
     int boolean = 0;
@@ -89,23 +113,20 @@ void getKey(char* json){
             cpt ++;
             break;
         }
-        else if((valueSpace == 'true') || (value == 'false')){
+        else if((strcmp(valueSpace,"true")==0) || (strcmp(valueSpace,"false")==0)){
             type = BOOLEAN;
             break;
         }
         else if (check_string(valueSpace) == 1){
-            type = DOUBLE;
+            type = INT;
             break;
         }
     }
 
     printf("key :%s Value :%s ",keySpace,valueSpace);
     printf(" Type :%s\n",printType(type));
-
-
-
-
-
+    hashmap_put(map, keySpace, valueSpace);
+    printf("test getKey\n");
 
 }
 
@@ -126,11 +147,12 @@ char* printType(Type type){
         case STRING:
             return "String";
 
-        case DOUBLE:
-            return "DOUBLE";
+        case INT:
+            return "INT";
 
         case DATE:
             return "DATE";
+        default: return NULL;
 
     }
 }
