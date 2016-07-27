@@ -189,6 +189,9 @@ int jsonError(char * json){
 
 // Convert a JSON String to a HashMap representation.
 /*t_hashmap* JSON_parse(char* string){
+=======
+
+>>>>>>> e9505cfb13875bf570b2433daab7952ec753549e
   t_hashmap* map = malloc(sizeof(t_hashmap*));
 
   printf("Json à convertir : %s \n",string);

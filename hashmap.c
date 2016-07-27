@@ -41,22 +41,22 @@ int hashmap_hashcode(char* key, int slots) {
   return hash % slots;
 }
 
-// NON OK
+// OK
 // Ex :  hashmap_put(map, 'student.rate', 56);
 //       hashmap_traverse(map, 'student.rate')   56
 void hashmap_put(t_hashmap* map, char* path, void* value) {
 
   printf("\n---------------MAP_PUT-------------------");
-  printf("\nmap->size: %d\tmap->slots*load_factor: %f\tpath: %s\tvalue: %s", map->size, map->slots * map->load_factor, path, (char*)value);
+  printf("\nmap->size: %d\tmap->slots*load_factor: %1.1f\tpath: %s\tvalue: %s", map->size, map->slots * map->load_factor, path, (char*)value);
   if(map->size >= (map->slots * map->load_factor)){
     hashmap_resize(map);
-
-    printf("\nafter resize map->slots: %d\tmap->size: %d", map->slots, map->size);
+    printf("\nDEBUG: after resize map->slots: %d\tmap->size: %d\n", map->slots, map->size);
   }
-
+  // printf("DEBUG: not resizing\n");
   int slot = hashmap_hashcode(path, map->slots);
+  printf("\thashcode: %d\n", slot);
   t_hashmap_entry** entries = &(map->entries[slot]);
-
+  // printf("DEBUG: before while\nvalue=%s", );
   while ((*entries) != NULL) {
     if (strcmp((*entries)->key, path) == 0) {
       (*entries)->value = value;
@@ -64,27 +64,30 @@ void hashmap_put(t_hashmap* map, char* path, void* value) {
     }
     entries = &((*entries)->next);
   }
-
   (*entries) = hashmap_entry_create(path, value);
   map->size++;
 }
 
-// NON OK
+// OK
 void hashmap_resize(t_hashmap* map){
 
-  printf("\n---------------MAP_RESIZE-------------------");
-  map->slots = map->slots * map->grow_factor;
+  printf("\n---------------MAP_RESIZE-------------------\n");
+
+  int slots_before = map->slots;
   t_hashmap_entry** entries = map->entries;
-  map->entries = malloc(sizeof(t_hashmap_entry*)*map->slots);
-  map->size = 0;
+  // Calcul du nouveau nombre de slots grâce à grow factor
+  int slots_after = map->slots * map->grow_factor;
+  map = hashmap_create(slots_after, map->load_factor, map->grow_factor);
+
   int i;
-  for(i = 0; i < map->slots; i++){
+  for(i = 0; i < slots_before; i++){
     t_hashmap_entry* entry = entries[i];
+
     while(entry !=  NULL){
+      // printf("DEBUG: i=%d, key = %s\tvalue = %s\n", i, entry->key, (char*)entry->value);
       hashmap_put(map, entry->key, entry->value);
       entry = entry->next;
     }
-    printf("\nfin while");
   }
 }
 
@@ -154,4 +157,9 @@ void* hashmap_delete(t_hashmap* map, char* key){
     *entry = (*entry)->next;
   }
   return value;
+}
+
+// NON OK
+int hashmap_free(t_hashmap* map){
+  return 1;
 }

@@ -23,5 +23,6 @@ void* hashmap_get(t_hashmap* map, char* path);
 void* hashmap_remove(t_hashmap* map, char* key);
 void hashmap_resize(t_hashmap* map);
 void* hashmap_delete(t_hashmap* map, char* key);
+int hashmap_free(t_hashmap* map);
 
 #endif
