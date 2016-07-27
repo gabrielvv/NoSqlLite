@@ -11,7 +11,7 @@
 
 /**************************************************
 
-collection: identifie la collection sur laquelle on va effectuer les autres actions - si pas de collection -> abort
+collection: identifie la collection sur laquelle on va effectuer une action - si pas de collection -> abort
 
 Action:
   - insert:     ajout d'un élément
@@ -20,7 +20,7 @@ Action:
   - remove:     suppression d'un élément
 
 Options:
-  - where:      précise les éléments sur lesquels on veut effectuer l'action - fonctionne avec "set" et "remove"
+  - where:      précise le champ d'application de l'action - fonctionne avec "set"
   - projection: défini les propriétés qu'on veut voir apparaitre à l'affichage
   - sort:       trie les objets
 
@@ -44,7 +44,7 @@ void print_help(){
   printf("\n\t--set\t\tjson");
   printf("\n\t--find\t\tjson");
   printf("\nOptions :");
-  printf("\n\t--where\t\tjson\ten conjonction avec --set et --remove pour retrecir le champ d'action");
+  printf("\n\t--where\t\tjson\ten conjonction avec --set pour preciser le champ d'action");
   printf("\n\t--projection\tjson\ten conjonction avec --find pour definir les proprietes a afficher");
   printf("\n\t--sort\t\tjson\ten conjonction avec --find");
   printf("\n");
@@ -77,6 +77,7 @@ void handleArgs(int argc, char* argv[]){
   if(argc == 5 || argc == 7){
     /** On recherche l'argument collection */
     for(i = 1; i < argc-1; i=i+2){
+      printf("arg %s\n", argv[i]);
       /** collection et action ne peuvent pas être le dernier argument */
       if(strcmp(argv[i], "--collection") == 0){
         collection = argv[i+1];
@@ -127,12 +128,15 @@ void handleArgs(int argc, char* argv[]){
 
   // 8 possibilités
   int sum = action_index + option_index;
+  // printf("fin analyse args: %d\n", sum);
 
   if(sum == 0)
     nosql_insert(collection, action_arg);
 
-  if(sum == 10)
+  if(sum == 10){
+    printf("nosql_find\n");
     nosql_find(collection, action_arg);
+  }
 
   if(sum == 12)
     nosql_find_sort(collection, action_arg, option_arg);
@@ -142,9 +146,6 @@ void handleArgs(int argc, char* argv[]){
 
   if(sum == 20)
     nosql__remove(collection, action_arg);
-
-  if(sum == 21)
-    nosql_remove_where(collection, action_arg, option_arg);
 
   if(sum == 30)
     nosql_set(collection, action_arg);

@@ -46,15 +46,15 @@ int hashmap_hashcode(char* key, int slots) {
 //       hashmap_traverse(map, 'student.rate')   56
 void hashmap_put(t_hashmap* map, char* path, void* value) {
 
-  printf("\n---------------MAP_PUT-------------------");
-  printf("\nmap->size: %d\tmap->slots*load_factor: %1.1f\tpath: %s\tvalue: %s", map->size, map->slots * map->load_factor, path, (char*)value);
+  // printf("\n---------------MAP_PUT-------------------");
+  // printf("\nmap->size: %d\tmap->slots*load_factor: %1.1f\tpath: %s\tvalue: %s", map->size, map->slots * map->load_factor, path, (char*)value);
   if(map->size >= (map->slots * map->load_factor)){
     hashmap_resize(map);
-    printf("\nDEBUG: after resize map->slots: %d\tmap->size: %d\n", map->slots, map->size);
+    // printf("\nDEBUG: after resize map->slots: %d\tmap->size: %d\n", map->slots, map->size);
   }
   // printf("DEBUG: not resizing\n");
   int slot = hashmap_hashcode(path, map->slots);
-  printf("\thashcode: %d\n", slot);
+  // printf("\thashcode: %d\n", slot);
   t_hashmap_entry** entries = &(map->entries[slot]);
   // printf("DEBUG: before while\nvalue=%s", );
   while ((*entries) != NULL) {
@@ -71,7 +71,7 @@ void hashmap_put(t_hashmap* map, char* path, void* value) {
 // OK
 void hashmap_resize(t_hashmap* map){
 
-  printf("\n---------------MAP_RESIZE-------------------\n");
+  // printf("\n---------------MAP_RESIZE-------------------\n");
 
   int slots_before = map->slots;
   t_hashmap_entry** entries = map->entries;
@@ -170,7 +170,6 @@ int hashmap_get_keys(t_hashmap* map, char** keys){
     entry = map->entries[i];
     while(entry){
       keys[count] = entry->key;
-      printf("%s\n", keys[count]);
       entry = entry->next;
       count++;
     }
@@ -181,5 +180,15 @@ int hashmap_get_keys(t_hashmap* map, char** keys){
 
 // NON OK
 int hashmap_free(t_hashmap* map){
+  for(i = 0; i < slots_number; i++){
+    t_hashmap_entry **entry, *t_Delete;
+    entry = &(map->entries[i]);
+    while(*entry){
+      toDelete = *entry;
+      *entry = (*entry)->next;
+      free(toDelete);
+    }
+  }
+  free(map);
   return 1;
 }

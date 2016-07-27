@@ -16,18 +16,17 @@ void test_nosql();
 void test_utils();
 
 int main(int argc, char* argv[]){
-  int i = 0;
-
-  if(i == 0){
+  int mode = 1;
+  if(mode == 0){
     /**************************** TEST **************************/
-    test_json();
+    // test_json();
     // test_hashmap_put();
     // test_hashmap_get();
     // test_nosql();
     // test_utils();
   }
 
-  if(i == 1){
+  if(mode == 1){
     /**************************** NOSQL LITE **************************/
     handleArgs(argc, argv);
   }
@@ -151,12 +150,12 @@ void test_json(){
   *
   *
   */
-  char** json_test_strings = malloc(sizeof(char**)*9);
+  char* json_test_strings[9];
 
   //Ne pas insérer d'espaces ??
   //On considère que les JSON strings seront stockées sans espaces ??
   // Il faut peut être s'occuper des espaces
-  json_test_strings[0] = "{key: 'value'}";
+  json_test_strings[0] = "{key: 'value', foo: 'bar'}";
   // json_test_strings[1] = "{\"key\":12}";
   // json_test_strings[2] = "{\"key\": 1.2}";
   //

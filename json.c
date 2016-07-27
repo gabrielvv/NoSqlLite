@@ -1,44 +1,37 @@
 #include <ctype.h>
 #include <stdio.h> //printf
 #include <stdlib.h> //malloc
-#include <string.h>
 #include <string.h> // strlen
 
 #include "json.h"
 #include "hashmap.h"
-#include "utils.h"
 
-/**
-* @see http://www.cplusplus.com/reference/cstring
-* strchr  Locate first occurrence of character in string (function )
-* strrchr Locate last occurrence of character in string (function )
-* strcpy  Copy string
-*/
+
 
 // Convert a JSON String to a hasMap representation
 t_hashmap* JSON_parse(char* string){
+    printf("/*******************  JSON PARSE **************************/\n");
+    if(strcmp(string, "{}") == 0)
+      return hashmap_create(10, 0.7, 2.2);
+
     //Volume p = DOUBLE;
     if(jsonError(string)==0){
         printf("Une erreur se trouve dans l'object json\n");
-        return NULL;
+        //return map;
     }
     // printf("%s",string);
     t_hashmap* map;
     if(string[0] == '{'){
-        // printf("Début du parsing\n");
-        map = hashmap_create(10,0.7, 2.2);
-        //getKeyValue(string);
+        printf("Debut du parsing\n");
+        map = hashmap_create(10, 0.7, 2.2);
         char* json;
         const char delim[2] = ",";
-        json = strtok (string,",");
-       // char line[strlen(json)];
+        int firstime = 1;
 
-        //printf("Print de p %s\n",json);
-        getKey(json,map);
-        while (json!= NULL)
+        while ((json = strtok( (firstime == 1 ? string : NULL), delim) ) != NULL)
         {
             getKey(json,map);
-            json = strtok (NULL, delim);
+            firstime = 0;
         }
     }
     return map;
@@ -48,10 +41,7 @@ void getKey(char* json,t_hashmap* map){
     char key[50] ="";
     char value[50] = "";
     int boolean = 0;
-    Type type = STRING;
-    if(type == STRING);
-      printf("");
-
+    Type type;
     for (int i=0; i<strlen(json); i++){
         if(json[i] == '{' || json[i] == '}'){
             if(i == 0){
@@ -156,6 +146,7 @@ char* removeQuote(char source[]){
             g++;
         }
     }
+    str[g] = '\0';
     return str;
 }
 
@@ -171,6 +162,7 @@ char* removeSpace(char source[]){
            g++;
        }
     }
+    str[g] = '\0';
     return str;
 }
 
@@ -188,19 +180,11 @@ int jsonError(char * json){
     if( (jsonObjectBegin == jsonObjectEnd) && (jsonArrayBegin == jsonArrayEnd))
         return 1;
     else return 0;
+
 }
 
+
 // Convert a HashMap to a JSON String representation.
-char* JSON_stringify(t_hashmap* map){
-  /***********************************************
-  - Faire un tableau de key-value
-  - trouver les sous-objets et les convertir (en commençant par le niveau le plus bas de la hiérarchie -> récursivité)
-  - convertir les key-value au niveau racine
-
-  le caractère . indique un sous niveau dans la hiérarchie
-
-  *************************************************/
-  int x = 1;
-  char* json = malloc(sizeof(char*)*x);
-  return json;
+void JSON_stringify_and_print(t_hashmap* map){
+  printf("fake");
 }
