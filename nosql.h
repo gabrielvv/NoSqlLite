@@ -10,7 +10,8 @@ void nosql_remove_where(char* collection, char* action_arg, char* option_arg);
 void nosql_set(char* collection, char* action_arg);
 void nosql_set_where(char* collection, char* action_arg, char* option_arg);
 
-int load_collection(char* collection, t_hashmap** map_array);
+unsigned load_collection(char* collection, t_hashmap** map_array);
 void write_collection(char* collection_name, char* collection_content);
+unsigned get_count(char* collection);
 
 #endif

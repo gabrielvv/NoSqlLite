@@ -159,6 +159,26 @@ void* hashmap_delete(t_hashmap* map, char* key){
   return value;
 }
 
+int hashmap_get_keys(t_hashmap* map, char** keys){
+
+  unsigned i;
+  unsigned count = 0;
+  int slots_number = map->slots;
+  t_hashmap_entry *entry;
+
+  for(i = 0; i < slots_number; i++){
+    entry = map->entries[i];
+    while(entry){
+      keys[count] = entry->key;
+      printf("%s\n", keys[count]);
+      entry = entry->next;
+      count++;
+    }
+  }
+
+  return map->size;
+}
+
 // NON OK
 int hashmap_free(t_hashmap* map){
   return 1;
