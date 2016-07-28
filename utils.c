@@ -11,14 +11,10 @@ char* substring(char* str, unsigned from, unsigned to, char* substr){
   return substr;
 }
 
-void** quick_sort(void** list, int len){
-  if(len < 2)
-    return;
 
-  void* pivot = list[0];
-  list = &list[1];
-}
-
-int generic_cmp(void* a, void* b){
-  printf("%d")
+void free_keys(char** k, int size){
+  unsigned i;
+  for(i = 0; i < size; i++){
+    free(k[i]);
+  }
 }

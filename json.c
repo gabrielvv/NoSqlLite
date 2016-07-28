@@ -10,19 +10,20 @@
 
 // Convert a JSON String to a hasMap representation
 t_hashmap* JSON_parse(char* string){
-    printf("/*******************  JSON PARSE **************************/\n");
+    t_hashmap* map = NULL;
+    // printf("/*******************  JSON PARSE **************************/\n");
     if(strcmp(string, "{}") == 0)
       return hashmap_create(10, 0.7, 2.2);
 
     //Volume p = DOUBLE;
     if(jsonError(string)==0){
-        printf("Une erreur se trouve dans l'object json\n");
-        //return map;
+        // printf("Une erreur se trouve dans l'object json\n");
+        return map;
     }
     // printf("%s",string);
-    t_hashmap* map;
+
     if(string[0] == '{'){
-        printf("Debut du parsing\n");
+        // printf("Debut du parsing\n");
         map = hashmap_create(10, 0.7, 2.2);
         char* json;
         const char delim[2] = ",";
@@ -98,7 +99,7 @@ void getKey(char* json,t_hashmap* map){
 
     // printf("key :%s Value :%s ",keySpace,valueSpace);
     // printf(" Type :%s\n",printType(type));
-    hashmap_put(map, keySpace, valueSpace);
+    hashmap_put(map, keySpace, valueSpace, type);
     // printf("test getKey\n");
 
 }
@@ -183,8 +184,130 @@ int jsonError(char * json){
 
 }
 
-
 // Convert a HashMap to a JSON String representation.
+char* JSON_stringify(t_hashmap* map){
+ // int x = 1;
+  //char* json = malloc(sizeof(char*)*x);
+
+  char** keys = malloc(sizeof(char*)*map->size);
+  /*int size = hashmap_get_keys(map,keys);
+  for(int i =0; i<size;i++){
+      //printf("%s\n", keys[i]);
+      printf("Value %s\n",hashmap_get(map,keys[i]));
+  }*/
+  //char ** keys;
+  int size = hashmap_get_keys(map,keys);
+  unsigned i;
+  unsigned count = 0;
+  int slots_number = map->slots;
+  t_hashmap_entry *entry;
+  char* json = malloc(sizeof(char)*200);
+  memset(json,0,strlen(json)); //empty str
+  strcat(json,"{");
+
+  for(i = 0; i < slots_number; i++){
+      entry = map->entries[i];
+      while(entry){
+         // keys = entry->key;
+          strcat(json," ");
+          strcat(json,(entryStringify(entry)));
+          entry = entry->next;
+          count++;
+          if(count <size){
+              strcat(json,",");
+
+          }
+      }
+  }
+  strcat(json," }");
+  printf("json : %s\n",json);
+
+  return json;
+}
+
 void JSON_stringify_and_print(t_hashmap* map){
-  printf("fake");
+  printf("%s\n", JSON_stringify(map));
+}
+
+char* entryStringify(t_hashmap_entry* entry){
+    char* string = malloc(sizeof(char)*200);
+    memset(string,0,strlen(string));
+    int cpt = 0;
+    while((entry->key)[cpt]){
+        string[cpt] = (entry->key)[cpt];
+        cpt++;
+    }
+    string[cpt] = '\0';
+    strcat (string," : ");
+
+    if(entry->type == STRING){
+        strcat(string,"\"");
+        strcat(string,entry->value);
+        strcat(string,"\"");
+    }
+
+    else if(entry->type == INT){
+      strcat(string,entry->value);
+    }
+    return string;
+}
+
+char* entryStringifySomeKeys(t_hashmap* map, char** keys,int size){
+    //char ** keys;
+   // int size = hashmap_get_keys(map,keys);
+    unsigned i;
+    unsigned count = 0;
+    int slots_number = map->slots;
+    t_hashmap_entry *entry;
+    char* json = malloc(sizeof(char)*200);
+    memset(json,0,strlen(json));
+    strcat(json,"{");
+    for(i = 0; i < slots_number; i++){
+        entry = map->entries[i];
+        while(entry){
+          for(int g = 0 ; g<size;g++){
+            if(strcmp(entry->key,keys[g]) == 0){
+                strcat(json," ");
+                strcat(json,(entryStringify(entry)));
+                break;
+            }
+          }
+          entry = entry->next;
+          count++;
+          if(count <size){
+              strcat(json,",");
+
+          }
+        }
+    }
+    strcat(json," }");
+    // printf("json : %s\n",json);
+    return json;
+}
+
+void JSON_stringify_project_and_print(t_hashmap* map, char** keys,int size){
+  printf("%s\n", entryStringifySomeKeys(map, keys, size));
+}
+
+Type getType(char* value){
+  int cpt=0;
+  Type type;
+  for(int i= 0; i<strlen(value);i++){
+      if(value[i] == '\'' && (cpt%2)==0){
+          type = STRING;
+          //printf("Value Test quote%s\n",value);
+          value = removeQuote(value);
+          cpt ++;
+          break;
+      }
+      else if((strcmp(value,"true")==0) || (strcmp(value,"false")==0)){
+          type = BOOLEAN;
+          break;
+      }
+      else if (check_string(value) == 1){
+          type = INT;
+          break;
+      }
+  }
+  return type;
 }

@@ -1,4 +1,4 @@
 { name : 'Gabriel', rate : '12', group : 'A1' }
-{name: 'David', rate: '15', group: 'A2'}
+{name: 'Gabriel', rate: '12', group: 'A1'}
 {name: 'Gabriel', rate: '12', group: 'A1'}
 {name: 'Gabriel', rate: '12', group: 'A1'}

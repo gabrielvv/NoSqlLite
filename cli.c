@@ -77,7 +77,7 @@ void handleArgs(int argc, char* argv[]){
   if(argc == 5 || argc == 7){
     /** On recherche l'argument collection */
     for(i = 1; i < argc-1; i=i+2){
-      printf("arg %s\n", argv[i]);
+      // printf("arg %s\n", argv[i]);
       /** collection et action ne peuvent pas être le dernier argument */
       if(strcmp(argv[i], "--collection") == 0){
         collection = argv[i+1];
@@ -134,7 +134,6 @@ void handleArgs(int argc, char* argv[]){
     nosql_insert(collection, action_arg);
 
   if(sum == 10){
-    printf("nosql_find\n");
     nosql_find(collection, action_arg);
   }
 
@@ -145,7 +144,7 @@ void handleArgs(int argc, char* argv[]){
     nosql_find_projection(collection, action_arg, option_arg);
 
   if(sum == 20)
-    nosql__remove(collection, action_arg);
+    nosql_remove(collection, action_arg);
 
   if(sum == 30)
     nosql_set(collection, action_arg);

@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "hashmap.h"
+#include "json.h"
 
 // OK
 t_hashmap* hashmap_create(int slots, float lf, float gf){
@@ -23,10 +24,11 @@ t_hashmap* hashmap_create(int slots, float lf, float gf){
 }
 
 // OK
-t_hashmap_entry* hashmap_entry_create(char* k, void* v){
+t_hashmap_entry* hashmap_entry_create(char* k, void* v,Type type){
   t_hashmap_entry* entry = malloc(sizeof(t_hashmap_entry));
   entry->key = k;
   entry->value = v;
+  entry->type = type;
   entry->next = NULL;
   return entry;
 }
@@ -44,10 +46,10 @@ int hashmap_hashcode(char* key, int slots) {
 // OK
 // Ex :  hashmap_put(map, 'student.rate', 56);
 //       hashmap_traverse(map, 'student.rate')   56
-void hashmap_put(t_hashmap* map, char* path, void* value) {
+void hashmap_put(t_hashmap* map, char* path, void* value, Type type) {
 
   // printf("\n---------------MAP_PUT-------------------");
-  // printf("\nmap->size: %d\tmap->slots*load_factor: %1.1f\tpath: %s\tvalue: %s", map->size, map->slots * map->load_factor, path, (char*)value);
+  // printf("\nmap->size: %d\tmap->slots*load_factor: %1.1f\tpath: %s\tvalue: %s\ttype: %s", map->size, map->slots * map->load_factor, path, (char*)value,printType(type));
   if(map->size >= (map->slots * map->load_factor)){
     hashmap_resize(map);
     // printf("\nDEBUG: after resize map->slots: %d\tmap->size: %d\n", map->slots, map->size);
@@ -60,11 +62,12 @@ void hashmap_put(t_hashmap* map, char* path, void* value) {
   while ((*entries) != NULL) {
     if (strcmp((*entries)->key, path) == 0) {
       (*entries)->value = value;
+      (*entries)->type = type;
       return;
     }
     entries = &((*entries)->next);
   }
-  (*entries) = hashmap_entry_create(path, value);
+  (*entries) = hashmap_entry_create(path, value,type);
   map->size++;
 }
 
@@ -85,7 +88,7 @@ void hashmap_resize(t_hashmap* map){
 
     while(entry !=  NULL){
       // printf("DEBUG: i=%d, key = %s\tvalue = %s\n", i, entry->key, (char*)entry->value);
-      hashmap_put(map, entry->key, entry->value);
+      hashmap_put(map, entry->key, entry->value,entry->type);
       entry = entry->next;
     }
   }
@@ -159,6 +162,7 @@ void* hashmap_delete(t_hashmap* map, char* key){
   return value;
 }
 
+//OK
 int hashmap_get_keys(t_hashmap* map, char** keys){
 
   unsigned i;
@@ -170,6 +174,7 @@ int hashmap_get_keys(t_hashmap* map, char** keys){
     entry = map->entries[i];
     while(entry){
       keys[count] = entry->key;
+      // printf("%s\n", keys[count]);
       entry = entry->next;
       count++;
     }
@@ -180,8 +185,10 @@ int hashmap_get_keys(t_hashmap* map, char** keys){
 
 // NON OK
 int hashmap_free(t_hashmap* map){
+  unsigned i;
+  unsigned slots_number = map->slots;
   for(i = 0; i < slots_number; i++){
-    t_hashmap_entry **entry, *t_Delete;
+    t_hashmap_entry **entry, *toDelete;
     entry = &(map->entries[i]);
     while(*entry){
       toDelete = *entry;
@@ -191,4 +198,12 @@ int hashmap_free(t_hashmap* map){
   }
   free(map);
   return 1;
+}
+
+
+void free_map_array(t_hashmap** map_array, unsigned size){
+  unsigned i;
+  for(i = 0; i < size; i++){
+    hashmap_free(map_array[i]);
+  }
 }

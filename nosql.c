@@ -16,7 +16,9 @@ void nosql_insert(char* collection, char* action_arg){
   sprintf(filename, "%s.json", collection);
   fp = fopen(filename, "a");
   //write content
-  fwrite(action_arg , 1 , sizeof(action_arg) , fp);
+  printf("action_arg %s\t sizeof: %d\n", action_arg, strlen(action_arg));
+  fwrite(action_arg , 1 , strlen(action_arg) , fp);
+  fwrite("\n" , 1 , 1 , fp);
   fclose(fp);
 }
 
@@ -36,12 +38,17 @@ void nosql_find(char* collection, char* action_arg){
   * dans le fichier
   */
   unsigned collection_size = get_count(collection);
+
   t_hashmap** map_array = malloc(sizeof(t_hashmap*)*collection_size);
   load_collection(collection, map_array);
-
+  printf("%s\n", hashmap_get(map_array[0], "name"));
+  printf("%s\n",  hashmap_get(map_array[0], "rate"));
+  printf("%s\n", hashmap_get(map_array[0], "group"));
+  printf("%s\n", hashmap_get(map_array[1], "name"));
+  printf("%s\n",  hashmap_get(map_array[1], "rate"));
+  printf("%s\n", hashmap_get(map_array[1], "group"));
   unsigned i, j;
   bool found = (to_find->size == 0 ? TRUE : FALSE);
-
  /**
   * Iteration dans le tableau de hashmap
   * Quand une hashmap satisfait aux conditions
@@ -51,6 +58,7 @@ void nosql_find(char* collection, char* action_arg){
   for(i = 0; i < collection_size; i++){
     t_hashmap* map = map_array[i];
 
+    //TRY MATCHING OBJECT IF FIND OBJECT NOT EMPTY
     for(j = 0; j < keys_len; j++){
       char* key = keys[j];
       if(strcmp( hashmap_get(to_find, key), hashmap_get(map, key) ) == 0){
@@ -60,12 +68,14 @@ void nosql_find(char* collection, char* action_arg){
         break;
       }
     }
-
     if(found == TRUE)
       JSON_stringify_and_print(map);
-
-    hashmap_free(map)
   }//for
+
+  free_keys(keys, to_find->size);
+  hashmap_free(to_find);
+  free_map_array(map_array, collection_size);
+
 }
 
 void nosql_find_sort(char* collection, char* action_arg, char* option_arg){
@@ -73,6 +83,7 @@ void nosql_find_sort(char* collection, char* action_arg, char* option_arg){
 }
 
 void nosql_find_projection(char* collection, char* action_arg, char* option_arg){
+
   /**
   * Transforme l'argument action en hashmap
   * Remplie un tableau avec les valeurs des clés de l'argument
@@ -122,13 +133,22 @@ void nosql_find_projection(char* collection, char* action_arg, char* option_arg)
     }
 
     if(found == TRUE)
-      JSON_stringify_project_and_print(map, option_keys);
-
-    hashmap_free(map);
+      JSON_stringify_project_and_print(map, option_keys, option_keys_len);
   }//for
+
+  free_keys(action_keys, to_find->size);
+  free_keys(option_keys, to_project->size);
+  hashmap_free(to_find);
+  hashmap_free(to_project);
+  free_map_array(map_array, collection_size);
 }
 
+/****************** REMOVE **************************/
+
 void nosql_remove(char* collection, char* action_arg){
+  FILE *fp;
+  char filename[80];
+  sprintf(filename, "%s.json", collection);
   /**
   * Transforme l'argument action en hashmap
   * Remplie un tableau avec les valeurs des clés de l'argument
@@ -147,6 +167,7 @@ void nosql_remove(char* collection, char* action_arg){
   load_collection(collection, map_array);
 
   unsigned i, j;
+  int count = 0;
   bool found = (to_find->size == 0 ? TRUE : FALSE);
   for(i = 0; i < collection_size; i++){
    t_hashmap* map = map_array[i];
@@ -159,39 +180,45 @@ void nosql_remove(char* collection, char* action_arg){
         found = FALSE;
         break;
       }
-    }
-    if(found == TRUE)
-      hashmap_put(map, key, hashmap_get(to_set, key));
+    } //for
 
-    if(i == 0){
-      fp = fopen(filename,"w");
-      char[] collection_content = JSON_stringify(map);
-      fwrite(collection_content, 1 , sizeof(collection_content) , fp);
-      fclose(fp);
-    }else{
-      fp = fopen(filename,"a");
-      char[] collection_content = JSON_stringify(map);
-      fwrite("\n", 1, sizeof("\n"), fp);
-      fwrite(collection_content, 1 , sizeof(collection_content) , fp);
-      fclose(fp);
-    }
+    if(found == FALSE){
+      if(count == 0){
+        fp = fopen(filename,"w");
+        char* collection_content = JSON_stringify(map);
+        fwrite(collection_content, 1 , sizeof(collection_content) , fp);
+        fclose(fp);
+      }else{
+        fp = fopen(filename,"a");
+        char* collection_content = JSON_stringify(map);
+        fwrite("\n", 1, sizeof("\n"), fp);
+        fwrite(collection_content, 1 , sizeof(collection_content) , fp);
+        fclose(fp);
+      }
+      count++;
+    }//if
+
   }//for
 
-  hashmap_free(map);
+  free_keys(action_keys, to_find->size);
+  hashmap_free(to_find);
+  free_map_array(map_array, collection_size);
 }
+
+/************************** SET **************************/
 
 void nosql_set(char* collection, char* action_arg){
   FILE *fp;
   char filename[80];
-  sprintf(filename, "%s.json", collection_name);
+  sprintf(filename, "%s.json", collection);
   /**
   * Transforme l'argument action en hashmap
   * Remplie un tableau avec les valeurs des clés de l'argument
   *
   */
   t_hashmap* to_set = JSON_parse(action_arg);
-  char** action_keys = malloc(sizeof(char*)*to_find->size);
-  int action_keys_len = hashmap_get_keys(to_find, action_keys);
+  char** action_keys = malloc(sizeof(char*)*to_set->size);
+  int action_keys_len = hashmap_get_keys(to_set, action_keys);
 
   /**
   * Tableau de hashmaps représentant les objets stockés
@@ -210,49 +237,56 @@ void nosql_set(char* collection, char* action_arg){
   unsigned i, j;
   for(i = 0; i < collection_size; i++){
     t_hashmap* map = map_array[i];
-
+    //SET NEW VALUES
     for(j = 0; j < action_keys_len; j++){
-      hashmap_put(map, key, hashmap_get(to_set, key));
+      char* key = action_keys[j];
+      void* value = hashmap_get(to_set, key);
+      hashmap_put(map, key, value, getType(value));
     }
+    //WRITE
     if(i == 0){
       fp = fopen(filename,"w");
-      char[] collection_content = JSON_stringify(map);
+      char* collection_content = JSON_stringify(map);
       fwrite(collection_content, 1 , sizeof(collection_content) , fp);
       fclose(fp);
     }else{
       fp = fopen(filename,"a");
-      char[] collection_content = JSON_stringify(map);
+      char* collection_content = JSON_stringify(map);
       fwrite("\n", 1, sizeof("\n"), fp);
       fwrite(collection_content, 1 , sizeof(collection_content) , fp);
       fclose(fp);
     }
   }//for
 
-  // char* collection_str = hashmap_array_to_string(t_hashmap** map_array, collection_size);
-  hashmap_free(map);
+
+  free_keys(action_keys, to_set->size);
+  hashmap_free(to_set);
+  free_map_array(map_array, collection_size);
 }
+
+/****************  SET WHERE ********************/
 
 void nosql_set_where(char* collection, char* action_arg, char* option_arg){
   FILE *fp;
   char filename[80];
-  sprintf(filename, "%s.json", collection_name);
+  sprintf(filename, "%s.json", collection);
   /**
   * Transforme l'argument action en hashmap
   * Remplie un tableau avec les valeurs des clés de l'argument
   *
   */
   t_hashmap* to_set = JSON_parse(action_arg);
-  char** action_keys = malloc(sizeof(char*)*to_find->size);
-  int action_keys_len = hashmap_get_keys(to_find, action_keys);
+  char** action_keys = malloc(sizeof(char*)*to_set->size);
+  int action_keys_len = hashmap_get_keys(to_set, action_keys);
 
   /**
   * Transforme l'argument option en hashmap
   * Remplie un tableau avec les valeurs des clés de l'argument
   *
   */
-  t_hashmap* to_project = JSON_parse(action_arg);
-  char** option_keys = malloc(sizeof(char*)*to_project->size);
-  int option_keys_len = hashmap_get_keys(to_project, option_keys);
+  t_hashmap* where = JSON_parse(action_arg);
+  char** option_keys = malloc(sizeof(char*)*where->size);
+  // int option_keys_len = hashmap_get_keys(where, option_keys);
 
   /**
   * Tableau de hashmaps représentant les objets stockés
@@ -269,40 +303,64 @@ void nosql_set_where(char* collection, char* action_arg, char* option_arg){
   * on l'affiche
   */
   unsigned i, j;
-  int count = 0;
-  bool found = (to_find->size == 0 ? TRUE : FALSE);
+  char* key;
+  bool found = (to_set->size == 0 ? TRUE : FALSE);
   for(i = 0; i < collection_size; i++){
     t_hashmap* map = map_array[i];
-
+    //FIND MATCHING OBJECT
     for(j = 0; j < action_keys_len; j++){
-      char* key = action_keys[j];
-      if(strcmp( hashmap_get(to_find, key), hashmap_get(map, key) ) == 0){
+      key = option_keys[j];
+      if(strcmp( hashmap_get(where, key), hashmap_get(map, key) ) == 0){
         found = TRUE;
       }else{
         found = FALSE;
         break;
       }
     }
-
-    if(found == FALSE){
-      if(count == 0){
-        fp = fopen(filename,"w");
-        char[] collection_content = JSON_stringify(map);
-        fwrite(collection_content, 1 , sizeof(collection_content) , fp);
-        fclose(fp);
-      }else{
-        fp = fopen(filename,"a");
-        char[] collection_content = JSON_stringify(map);
-        fwrite("\n", 1, sizeof("\n"), fp);
-        fwrite(collection_content, 1 , sizeof(collection_content) , fp);
-        fclose(fp);
+    //SET NEW VALUES WHEN OBJECT MATCH FILTER
+    if(found == TRUE){
+      for(j = 0; j < action_keys_len; j++){
+        key = action_keys[j];
+        void* value = hashmap_get(to_set, key);
+        hashmap_put(map, key, value, getType(value));
       }
-      count++;
     }
+
+    if(i == 0){
+      fp = fopen(filename,"w");
+      char* collection_content = JSON_stringify(map);
+      fwrite(collection_content, 1 , sizeof(collection_content) , fp);
+      fclose(fp);
+    }else{
+      fp = fopen(filename,"a");
+      char* collection_content = JSON_stringify(map);
+      fwrite("\n", 1, sizeof("\n"), fp);
+      fwrite(collection_content, 1 , sizeof(collection_content) , fp);
+      fclose(fp);
+    }//if
+
   }//for
-  hashmap_free(map);
+
+  free_keys(action_keys, to_set->size);
+  free_keys(option_keys, where->size);
+  hashmap_free(to_set);
+  hashmap_free(where);
+  free_map_array(map_array, collection_size);
+
 }
 
+/********************  GET COUNT ******************/
+
+/**
+* @desc
+* Count how many objects are stored in collection
+* Try to read the header to get the count
+* If it does not find the header, it reads and analyze the whole file
+*
+* @param collection : the collection name
+*
+* @return count : number of objects stored in collection
+*/
 unsigned get_count(char* collection){
 
   FILE *fp;
@@ -416,13 +474,14 @@ unsigned load_collection(char* collection, t_hashmap** map_array){
     str[i] = c;
     i++;
   }
-  str[++i] = '\0'; //nécessaire ??
+  str[i-1] = '\0'; //nécessaire ??
 
   /******************** on charge les données dans map_array ****************************/
+  int cpt = 0;
   if(elements > 0){
 
     rewind(fp);
-    map_array = malloc(sizeof(t_hashmap*)*elements);
+    // map_array = malloc(sizeof(t_hashmap*)*elements);
     i = 0;
     while((c = fgetc(fp)) != EOF){
       if(c == 123){
@@ -437,15 +496,17 @@ unsigned load_collection(char* collection, t_hashmap** map_array){
         end = i;
         // printf("%d\n", end-start);
         char substr[end-start];
-
-        // printf("str :\n%s\n", str);
+        memset(substr,0,strlen(substr));
+        // printf("str :%s\n", str);
         substring(str, start, end, substr);
-        // printf("substr :\n%s\n", substr);
+        printf("substr :%s\n", substr);
 
-        map_array[i] = JSON_parse(substr);
+        map_array[cpt] = JSON_parse(substr);
+        // printf("map index %d :%p\n",cpt, map_array[cpt]);
         ouvrante = 0;
         fermante = 0;
         start = -1;
+        cpt++;
       }
       i++;
     }//while
@@ -454,47 +515,6 @@ unsigned load_collection(char* collection, t_hashmap** map_array){
 
   // if(elements == 0)
     // return map_array;
-
   fclose(fp);
   return elements;
-}
-
-void write_collection(char* collection_name, char* collection_content, Writing_mode mode){
-  FILE *fp;
-  char filename[80];
-  sprintf(filename, "%s.json", collection_name);
-  fp = fopen(filename, mode == WRITE ? "w" : "a");
-  //write content
-  fwrite(collection_content , 1 , sizeof(collection_content) , fp);
-  fclose(fp);
-}
-
-char* hashmap_array_to_string(t_hashmap** collection, int collection_size){
-
-  unsigned i;
-  char* collection_str;
-  char** objects = malloc(sizeof(char*)*collection_size);
-  unsigned total_size = 0; //la longueur totale de la string concaténant les objet
-  int size_array[collection_size];
-
-  for(i = 0; i < collection_size; i++){
-    // objects[i] = JSON_stringify(collection[i]);
-    size_array[i] = strlen(objects[i]);
-    total_size += size_array[i]+1; // plus 1 pour le caractère de retour à la ligne entre chaque objet
-  }
-
-  collection_str = malloc(sizeof(char)*total_size);
-  char* current_object;
-  int current_size;
-  unsigned j;
-
-  for(i = 0; i < collection_size; i++){
-    current_object = objects[i];
-    current_size = size_array[i];
-    for(j = 0; j < current_size; j++){
-      collection_str[i+j] = current_object[j];
-    }
-    collection_str[i+j] = '\n';
-  }
-  return collection_str;
 }

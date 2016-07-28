@@ -3,12 +3,6 @@
 
 #include "hashmap.h"
 
-typedef enum Type Type;
-enum Type
-{
-    INT,BOOLEAN, STRING,FLOAT,DATE
-};
-
 typedef struct indexValue {
     int a;
     char* b;
@@ -27,6 +21,10 @@ char* removeQuote(char source[]);
 char* printType(Type type);
 int check_string( char* string);
 void myStrcopy(char *copy, char* target, int size);
+char* entryStringify(t_hashmap_entry* entry);
+char* entryStringifySomeKeys(t_hashmap* map, char** keys, int size);
+void JSON_stringify_project_and_print(t_hashmap* map, char** keys,int size);
 void JSON_stringify_and_print(t_hashmap* map);
+Type getType(char* value);
 
 #endif
