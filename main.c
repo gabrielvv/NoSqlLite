@@ -16,8 +16,22 @@ int main(){
   t_hashmap* map = JSON_parse(json);
 
   //printf("test %d\n",map->size);
-  //printf("Print name %s\n",hashmap_get(map,"name"));
+  printf("Print name %s\n",hashmap_get(map,"name"));
+
+  /*for(int i =0; i<2;i++){
+    //printf("%s\n", keys[i]);
+    printf("Value %s\n",keysToStringify[i]);
+
+  }*/
+  printf("Bonjour\n");
   JSON_stringify(map);
+  //printf("Print name %s\n",hashmap_get(map,"name"));
+  char** keysToStringify;
+  keysToStringify[0]= "name";
+  keysToStringify[1]= "rate";
+
+  entryStringifySomeKeys(map,keysToStringify,2);
+
   // test_json();
   //test_hashmap_put();
   //test_hashmap_get();

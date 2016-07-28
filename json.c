@@ -218,14 +218,14 @@ char* JSON_stringify(t_hashmap* map){
  // int x = 1;
   //char* json = malloc(sizeof(char*)*x);
 
-    /*char** keys = malloc(sizeof(char*)*map->size);
-    int size = hashmap_get_keys(map,keys);
+    char** keys = malloc(sizeof(char*)*map->size);
+    /*int size = hashmap_get_keys(map,keys);
     for(int i =0; i<size;i++){
         //printf("%s\n", keys[i]);
         printf("Value %s\n",hashmap_get(map,keys[i]));
 
     }*/
-    char ** keys;
+    //char ** keys;
     int size = hashmap_get_keys(map,keys);
     unsigned i;
     unsigned count = 0;
@@ -255,10 +255,14 @@ char* JSON_stringify(t_hashmap* map){
 }
 
 char* entryStringify(t_hashmap_entry* entry){
-    char* string;
-    string = entry->key;
+    char* string = malloc(sizeof(char)*200);
+    int cpt = 0;
+    while((entry->key)[cpt]){
+        string[cpt] = (entry->key)[cpt];
+        cpt++;
+    }
     strcat (string," : ");
-    //printf("key : %s Type %s\n",string,printType(entry->type));
+
     if(entry->type == STRING){
         strcat(string,"\"");
         strcat(string,entry->value);
@@ -268,6 +272,42 @@ char* entryStringify(t_hashmap_entry* entry){
     else if(entry->type == INT){
         strcat(string,entry->value);
     }
-    //printf("Str %s\n",string);
     return string;
+}
+
+char* entryStringifySomeKeys(t_hashmap* map, char** keys,int size){
+    //char ** keys;
+   // int size = hashmap_get_keys(map,keys);
+    unsigned i;
+    unsigned count = 0;
+    int slots_number = map->slots;
+    t_hashmap_entry *entry;
+    char* json = malloc(sizeof(char)*200);
+    //char* keys;
+    strcat(json,"{");
+
+    for(i = 0; i < slots_number; i++){
+        entry = map->entries[i];
+        while(entry){
+            // keys = entry->key;
+            for(int g = 0 ; g<size;g++){
+                printf("Entry : %s, Key: %s\n",entry->key,keys[g]);
+                if(strcmp(entry->key,keys[g]) == 0){
+                    strcat(json," ");
+                    printf("sameKeys\n");
+                    strcat(json,(entryStringify(entry)));
+                    break;
+                }
+            }
+            entry = entry->next;
+            count++;
+            if(count <size){
+                strcat(json,",");
+
+            }
+        }
+    }
+    strcat(json," }");
+    printf("json : %s\n",json);
+    return json;
 }

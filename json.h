@@ -24,5 +24,6 @@ char* printType(Type type);
 int check_string( char* string);
 void myStrcopy(char *copy, char* target, int size);
 char* entryStringify(t_hashmap_entry* entry);
+char* entryStringifySomeKeys(t_hashmap* map, char** keys, int size);
 
 #endif
